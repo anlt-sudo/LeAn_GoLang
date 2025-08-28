@@ -1,12 +1,6 @@
-
 # Golang Training
 
 Đây là repository lưu lại những bài học về Golang, bên dưới mô tả là phần danh sách những bài học và trong đó sẽ chứa mẫu để mọi người có thể tham khảo. Cảm ơn mọi người đã quan tâm
-
-
-    
-
-
 
 ## Documentation
 
@@ -14,5 +8,4 @@
 2. [Cấu trúc dự án Golang](https://github.com/anlt-sudo/LeAn_GoLang/tree/main/day2/my-project)
 3. [Cú pháp cơ bản Golang](https://github.com/anlt-sudo/LeAn_GoLang/tree/main/day2/golang-variables)
 4. [Slice và Map](https://github.com/anlt-sudo/LeAn_GoLang/tree/main/day3)
-
-
+5. [Loops](https://github.com/anlt-sudo/LeAn_GoLang/blob/main/day4/go-loop/README.md)
