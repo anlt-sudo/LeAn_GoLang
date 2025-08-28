@@ -1,7 +1,7 @@
-## Anh Code Mau
+## Anh Code Mau: Xay dung mot chuong trinh kiem tra chuoi nguoc, chuoi doi xung va in anh trang den su dung ngon ngu Go
 
 1. Kiem tra chuoi nguoc, chuoi doi xung
-   ![Anh ket qua 1](loop1.png)
+   ![Ket qua](ket-qua-loop2.png)
 
 2. In anh trang den
-   ![Anh ket qua 2](<anh code mau.png>)
+   ![Ket qua anh trang den](<anh code mau-1.png>)
