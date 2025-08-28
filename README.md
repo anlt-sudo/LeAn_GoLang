@@ -9,3 +9,4 @@
 3. [Cú pháp cơ bản Golang](https://github.com/anlt-sudo/LeAn_GoLang/tree/main/day2/golang-variables)
 4. [Slice và Map](https://github.com/anlt-sudo/LeAn_GoLang/tree/main/day3)
 5. [Loops](https://github.com/anlt-sudo/LeAn_GoLang/blob/main/day4/go-loop/README.md)
+6. [Condition](https://github.com/anlt-sudo/LeAn_GoLang/blob/main/day4/go-condittion/README.md)
