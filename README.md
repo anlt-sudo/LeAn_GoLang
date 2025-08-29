@@ -11,3 +11,4 @@
 5. [Loops](https://github.com/anlt-sudo/LeAn_GoLang/blob/main/day4/go-loop/README.md)
 6. [Condition](https://github.com/anlt-sudo/LeAn_GoLang/blob/main/day4/go-condittion/README.md)
 7. [Function](https://github.com/anlt-sudo/LeAn_GoLang/blob/main/day5/go-function/README.md)
+8. [Pointer](https://github.com/anlt-sudo/LeAn_GoLang/blob/main/day5/go-pointer)
