@@ -23,13 +23,34 @@ Người dùng nhập dữ liệu từ bàn phím và chương trình xuất k�
    - Một lớp có thể có nhiều học sinh trùng tên (ví dụ: 3 bạn tên "An" trong cùng một lớp).
    - Số lượng học sinh trong lớp được tính **tự động** khi thêm học sinh, không nhập thủ công.
 
+## 📁 Cấu trúc thư mục
+
+````plaintext
+
+school-project/
+├── cmd/
+│   └── app/
+│       └── main.go            # entrypoint
+├── internal/
+│   ├── domain/
+│   │   ├── class.go           # struct Class + method
+│   │   ├── student.go         # struct Student + method
+│   │   └── school.go          # quản lý domain tổng thể
+│   └── service/
+│       └── school_service.go  # business logic: add class, add student, query
+├── pkg/
+│   └── ui/
+│       └── menu.go            # console UI (hoặc sau này là REST/CLI)
+├── go.mod
+
+
 ---
 
 ## ▶️ Cách chạy
 
 ```bash
-go run main.go
-```
+go run ./cmd/app/main.go
+````
 
 ## Ket Qua
 
