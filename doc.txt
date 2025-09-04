@@ -1,8 +1,0 @@
-2.4. Quy tắc về Tính nhất quán (Consistency)
-- Đây là một quy tắc cực kỳ quan trọng trong "Effective Go":
-- Nếu bất kỳ phương thức nào của một kiểu có receiver là con trỏ, thì tất cả các phương thức của kiểu đó nên có receiver là con trỏ,
- ngay cả những phương thức không cần sửa đổi receiver.
-
-* Tại sao?
-- Dự đoán được: Nó tạo ra một quy ước rõ ràng. Nếu một kiểu có các phương thức con trỏ, lập trình viên sẽ biết rằng kiểu này được thiết kế để được truyền đi dưới dạng con trỏ.
-- An toàn: Nó tránh việc vô tình tạo ra các bản sao của một đối tượng mà lẽ ra không nên được sao chép (ví dụ: các struct chứa sync.Mutex).
