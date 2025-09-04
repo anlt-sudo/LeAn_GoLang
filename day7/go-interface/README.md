@@ -12,21 +12,6 @@ Dự án xây dựng một hệ thống có thể gửi thông báo qua nhiều 
 - **`interface{}` và `Type Switch`:** Xử lý một tập hợp các đối tượng có kiểu dữ liệu khác nhau một cách an toàn.
 
 ## Cấu trúc Thư mục
-
-Dự án được tổ chức theo cấu trúc tiêu chuẩn của một ứng dụng Go:
-go-interface/
-├── go.mod
-├── README.md
-├── cmd/
-│ └── app/
-│ └── main.go
-└── internal/
-├── notification/
-│ └── service.go
-└── notifiers/
-├── email.go
-├── sms.go
-└── slack.go
 code
 Code
 
