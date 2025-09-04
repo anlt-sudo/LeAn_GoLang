@@ -20,13 +20,10 @@ func ProcessNotifications(notifiers []interface{}, message string) {
 	for _, notifier := range notifiers {
 		switch v := notifier.(type) {
 		case Notifier:
-			// Nếu phần tử thỏa mãn interface Notifier, gọi Send
 			v.Send(message)
 		case int:
-			// Nếu là int
 			fmt.Printf("Skipping notification for number: %d\n", v)
 		default:
-			// Các trường hợp còn lại
 			fmt.Printf("Unsupported notifier type: %T\n", v)
 		}
 	}
