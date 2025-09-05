@@ -1,14 +1,14 @@
-# Bài tập Golang: Đây là một bài tập don gian giup ban hieu hieu ve Go Concurrency
+# Bài tập Golang: Đây là một bài tập don gian giup ban hieu hieu ve Go Channel va Ung Dung Select Statement
 
 ## Kịch bản bài toán
 
-Chúng ta sẽ mô phỏng một quy trinh download file don gian
+Chúng ta sẽ mô phỏng một quy trinh dau gia mot san pham
 
 ## Cấu trúc Dự án
 
 Dự án được tổ chức theo cấu trúc tiêu chuẩn, tách biệt logic nghiệp vụ và ứng dụng.
 
-```go-concurrency/
+```go-channel-use-select/
 ├── go.mod
 ├── README.md
 ├── cmd/

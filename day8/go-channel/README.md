@@ -6,6 +6,8 @@ Chúng ta sẽ mô phỏng một quy trinh lay noi dung tu mot trang web
 
 ## Cấu trúc Dự án
 
+Dự án được tổ chức theo cấu trúc tiêu chuẩn, tách biệt logic nghiệp vụ và ứng dụng.
+
 ```go-channel/
 ├── go.mod
 ├── README.md
