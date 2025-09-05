@@ -1,0 +1,40 @@
+3. Giải pháp: Đồng bộ hóa Truy cập
+- Để giải quyết race condition, bạn phải đảm bảo rằng vùng code nguy hiểm (critical section) - nơi biến chia sẻ được truy cập - chỉ có thể được thực thi
+ bởi một goroutine tại một thời điểm. Có hai cách chính để làm điều này trong Go.
+* Giải pháp: Dùng Mutex (Khóa)
+- sync.Mutex (Mutual Exclusion) hoạt động giống như một cái khóa cho một căn phòng.
+- mu.Lock(): Một goroutine muốn vào "căn phòng" (critical section) phải giành được khóa. Nếu khóa đã bị người khác giữ, nó phải đứng đợi.
+- mu.Unlock(): Sau khi làm xong việc, goroutine phải nhả khóa ra để người khác có thể vào.
+* Sửa lại ví dụ bằng Mutex:
+
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	var wg sync.WaitGroup
+	var counter int = 0
+	var mu sync.Mutex // Khai báo một Mutex
+
+	for i := 0; i < 1000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			
+			mu.Lock() // Giành lấy khóa trước khi vào vùng nguy hiểm
+			counter++
+			mu.Unlock() // Nhả khóa ra ngay sau khi xong việc
+		}()
+	}
+
+	wg.Wait()
+	// Bây giờ kết quả sẽ luôn luôn là 1000
+	fmt.Printf("Giá trị cuối cùng của counter: %d\n", counter) 
+}
+
+* Bằng cách bọc counter++ trong mu.Lock() và mu.Unlock(), chúng ta đảm bảo rằng chỉ có một goroutine được phép thực hiện thao tác này tại một thời điểm,
+  loại bỏ hoàn toàn race condition.
+
