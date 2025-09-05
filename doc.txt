@@ -1,12 +1,3 @@
-3. Giải pháp: Đồng bộ hóa Truy cập
-- Để giải quyết race condition, bạn phải đảm bảo rằng vùng code nguy hiểm (critical section) - nơi biến chia sẻ được truy cập - chỉ có thể được thực thi
- bởi một goroutine tại một thời điểm. Có hai cách chính để làm điều này trong Go.
-* Giải pháp: Dùng Mutex (Khóa)
-- sync.Mutex (Mutual Exclusion) hoạt động giống như một cái khóa cho một căn phòng.
-- mu.Lock(): Một goroutine muốn vào "căn phòng" (critical section) phải giành được khóa. Nếu khóa đã bị người khác giữ, nó phải đứng đợi.
-- mu.Unlock(): Sau khi làm xong việc, goroutine phải nhả khóa ra để người khác có thể vào.
-* Sửa lại ví dụ bằng Mutex:
-
 package main
 
 import (
@@ -17,24 +8,32 @@ import (
 func main() {
 	var wg sync.WaitGroup
 	var counter int = 0
-	var mu sync.Mutex // Khai báo một Mutex
 
+	// Tạo một channel để nhận các "tín hiệu" tăng
+	incrementCh := make(chan bool)
+
+	// Goroutine quản lý: goroutine duy nhất được phép chạm vào 'counter'
+	go func() {
+		for range incrementCh {
+			counter++
+		}
+	}()
+
+	// Bắt đầu 1000 goroutine, mỗi goroutine gửi một tín hiệu
 	for i := 0; i < 1000; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			
-			mu.Lock() // Giành lấy khóa trước khi vào vùng nguy hiểm
-			counter++
-			mu.Unlock() // Nhả khóa ra ngay sau khi xong việc
+			// Gửi một tín hiệu vào channel để yêu cầu tăng
+			incrementCh <- true
 		}()
 	}
 
 	wg.Wait()
-	// Bây giờ kết quả sẽ luôn luôn là 1000
-	fmt.Printf("Giá trị cuối cùng của counter: %d\n", counter) 
+	close(incrementCh) // Đóng channel để goroutine quản lý kết thúc
+
+	// Kết quả cũng sẽ luôn là 1000
+	fmt.Printf("Giá trị cuối cùng của counter: %d\n", counter)
 }
-
-* Bằng cách bọc counter++ trong mu.Lock() và mu.Unlock(), chúng ta đảm bảo rằng chỉ có một goroutine được phép thực hiện thao tác này tại một thời điểm,
-  loại bỏ hoàn toàn race condition.
-
+* Mặc dù cách này có vẻ dài hơn cho ví dụ đơn giản này, nhưng nó cực kỳ mạnh mẽ cho các hệ thống phức tạp hơn, vì nó tránh được
+ các vấn đề liên quan đến khóa (như deadlock) và làm cho luồng dữ liệu trở nên rõ ràng hơn.
