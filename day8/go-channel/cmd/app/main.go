@@ -22,6 +22,7 @@ func main() {
 
 	var wg sync.WaitGroup
 
+	// Created a buffered channel to hold results
 	resultsChan := make(chan service.FetchResult, len(urls))
 
 	fmt.Println("Starting fetches...")
