@@ -1,93 +1,62 @@
-2. Các bước triển khai Worker Pool trong Golang
-2.1 Định nghĩa hàm worker
-- Hàm worker lắng nghe trên channel jobs, xử lý công việc rồi gửi kết quả lại qua results:
+5. recover - Lấy lại quyền kiểm soát từ một `panic`**
+5.1. recover là gì?
+- recover là một hàm tích hợp sẵn, cho phép chúng ta "bắt" lại một `panic` và lấy lại quyền kiểm soát luồng thực thi, ngăn không cho chương trình bị crash.
+* Quy tắc vàng: recover chỉ có hiệu lực khi được gọi trực tiếp bên trong một hàm defer. Nếu được gọi ở nơi khác, nó sẽ không làm gì cả và trả về `nil`.
 
-func worker(id int, jobs <-chan int, results chan<- int) {
-    for job := range jobs {
-        fmt.Println("Worker", id, "started job", job)
-        time.Sleep(time.Second) // Giả lập công việc
-        fmt.Println("Worker", id, "finished job", job)
-        results <- job * 2 // Gửi kết quả
-    }
-}
+5.2. Cách hoạt động
+-  Khi một panic xảy ra, Go sẽ bắt đầu thực thi các hàm defer.
+-  Nếu một trong các hàm defer đó gọi recover(), recover sẽ "bắt" lấy giá trị được truyền vào panic và dừng lại quá trình "unwinding".
+-  Chương trình sẽ tiếp tục thực thi từ sau điểm defer đó.
 
-2.2 Tạo các channel
-- Trong hàm main, tạo channel cho job và kết quả:
+5.3. Ví dụ về recover
+- Bây giờ, chúng ta sẽ viết một hàm bao bọc để gọi `fullName` một cách an toàn.
 
-jobs := make(chan int, 5)     // Hàng đợi công việc
-results := make(chan int, 5)  // Hàng đợi kết quả
+    package main
 
-2.3 Khởi tạo các worker Goroutines
-- Khởi chạy số lượng worker cố định:
+    import "fmt"
 
-for w := 1; w <= 3; w++ {
-    go worker(w, jobs, results)
-}
-
-2.4 Gửi công việc vào queue
-- Dùng vòng lặp để gửi dữ liệu công việc, sau đó đóng channel:
-
-for j := 1; j <= 5; j++ {
-    jobs <- j
-}
-close(jobs)
-
-2.5 Thu thập kết quả
-- Tiếp tục nhận kết quả từ results:
-
-for a := 1; a <= 5; a++ {
-    <-results
-}
-close(results)
-
-* Ví dụ đầy đủ:
-
-package main
-
-import (
-    "fmt"
-    "time"
-)
-
-func worker(id int, jobs <-chan int, results chan<- int) {
-    for j := range jobs {
-        fmt.Println("Worker", id, "started job", j)
-        time.Sleep(time.Second)
-        fmt.Println("Worker", id, "finished job", j)
-        results <- j * 2
-    }
-}
-
-func main() {
-    const numJobs = 5
-    jobs := make(chan int, numJobs)
-    results := make(chan int, numJobs)
-
-    for w := 1; w <= 3; w++ {
-        go worker(w, jobs, results)
+    // Hàm fullName giữ nguyên như ví dụ trước
+    func fullName(firstName *string, lastName *string) {
+        if firstName == nil {
+            panic("runtime error: first name cannot be nil")
+        }
+        if lastName == nil {
+            panic("runtime error: last name cannot be nil")
+        }
+        fmt.Printf("%s %s\n", *firstName, *lastName)
     }
 
-    for j := 1; j <= numJobs; j++ {
-        jobs <- j
+    // handleFullName là hàm bao bọc an toàn
+    func handleFullName() {
+        // Dùng defer và một hàm ẩn danh để bắt panic
+        defer func() {
+            // recover() sẽ bắt được giá trị của panic
+            if r := recover(); r != nil {
+                fmt.Println("ĐÃ BẮT ĐƯỢC LỖI:", r)
+            }
+        }()
+
+        fmt.Println("Bắt đầu gọi fullName...")
+        firstName := "Elon"
+        // Gây ra panic một cách có chủ đích
+        fullName(&firstName, nil) 
+        
+        // Dòng này sẽ không được thực thi vì panic xảy ra trước đó
+        fmt.Println("Kết thúc gọi fullName (bình thường)") 
     }
-    close(jobs)
 
-    for a := 1; a <= numJobs; a++ {
-        <-results
+    func main() {
+        handleFullName()
+        // Chương trình vẫn tiếp tục chạy đến đây!
+        fmt.Println("Chương trình chính đã kết thúc một cách an toàn.")
     }
-    close(results)
-}
-
-
-* Kết quả mẫu:
-
-Worker 3 started job 1
-Worker 1 started job 2
-Worker 2 started job 3
-Worker 1 finished job 2
-Worker 1 started job 4
-Worker 3 finished job 1
-Worker 3 started job 5
-Worker 2 finished job 3
-Worker 1 finished job 4
-Worker 3 finished job 5
+    
+    Kết quả khi chạy:
+    Bắt đầu gọi fullName...
+    ĐÃ BẮT ĐƯỢC LỖI: runtime error: last name cannot be nil
+    Chương trình chính đã kết thúc một cách an toàn.
+    Phân tích kết quả:
+    Hàm fullName vẫn panic như trước.
+    Tuy nhiên, hàm defer trong handleFullName đã được thực thi.
+    Bên trong defer, recover() đã bắt được giá trị của panic (chuỗi "runtime error: last name cannot be nil").
+    Chương trình đã không bị crash. Thay vào đó, nó in ra thông báo lỗi và tiếp tục thực thi, in ra dòng "Chương trình chính đã kết thúc...".
