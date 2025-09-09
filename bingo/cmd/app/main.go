@@ -72,5 +72,5 @@ func main() {
 		}
 		fmt.Fprintln(file)
 	}
-	fmt.Print("Da Ket")
+	fmt.Print("Da Ket Thuc")
 }

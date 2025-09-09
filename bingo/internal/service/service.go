@@ -5,7 +5,7 @@ import (
 	"math/rand"
 )
 
-const SIZE = 3
+const SIZE = 5
 
 func CreateBingoBoard() [][]string {
 	matrix := make([][]string, SIZE)
