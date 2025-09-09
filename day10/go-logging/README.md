@@ -8,16 +8,15 @@
 - Demo log các level khác nhau (debug, info, warn, error).
 - Gọi trực tiếp handler để log thông tin xử lý request mà không cần chạy server.
 
-
 ## Kết quả log
 
 ### 1. Log với zerolog
 
-![Log với zerolog](./demo/zerolog-demo.png)
+![Log với zerolog](./demo/zero-log.png)
 
 ### 2. Log với zap
 
-![Log với zap](./demo/zap-demo.png)
+![Log với zap](./demo/zap-logging.png)
 
 > Ảnh minh họa: hai file ảnh kết quả log thực tế (pi1, pi2) đã được đính kèm trong repo.
 
