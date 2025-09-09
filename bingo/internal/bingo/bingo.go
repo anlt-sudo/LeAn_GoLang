@@ -1,4 +1,4 @@
-package internal
+package bingo
 
 import (
 	"fmt"
@@ -46,7 +46,7 @@ func CheckBingo(matrix [][]string, used map[string]bool) (bool, string, [][2]int
 			return true, fmt.Sprintf("Bingo ngang dong %d", i+1), pos
 		}
 	}
-	
+
 	for j := 0; j < SIZE; j++ {
 		ok := true
 		pos := [][2]int{}
@@ -63,7 +63,6 @@ func CheckBingo(matrix [][]string, used map[string]bool) (bool, string, [][2]int
 		}
 	}
 
-	// Kiểm tra đường chéo chính
 	ok := true
 	pos := [][2]int{}
 	for i := 0; i < SIZE; i++ {
@@ -78,7 +77,6 @@ func CheckBingo(matrix [][]string, used map[string]bool) (bool, string, [][2]int
 		return true, "Bingo duong cheo chinh", pos
 	}
 
-	// Kiểm tra đường chéo phụ
 	ok = true
 	pos = [][2]int{}
 	for i := 0; i < SIZE; i++ {

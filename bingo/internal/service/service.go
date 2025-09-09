@@ -2,99 +2,105 @@ package service
 
 import (
 	"fmt"
+	"github.com/anlt-sudo/bingo/internal/bingo"
+	"github.com/anlt-sudo/bingo/internal/file"
+	"github.com/rs/zerolog/log"
 	"math/rand"
+	"time"
 )
 
-const SIZE = 5
-
-func CreateBingoBoard() [][]string {
-	matrix := make([][]string, SIZE)
-	used := make(map[int]bool)
-	for i := 0; i < SIZE; i++ {
-		matrix[i] = make([]string, SIZE)
-		for j := 0; j < SIZE; j++ {
-			if i == SIZE / 2 && j == SIZE / 2 {
-				matrix[i][j] = "X"
-				continue
-			}
-			for {
-				num := rand.Intn(50) + 1
-				if !used[num] {
-					matrix[i][j] = fmt.Sprintf("%2d", num)
-					used[num] = true
-					break
-				}
-			}
-		}
-	}
-
-	return matrix
+type BingoService struct {
+	board       [][]string
+	called      map[string]bool
+	calledList  []string
+	fileHandler *file.Handler
 }
 
-func CheckBingo(matrix [][] string, used map[string]bool) (bool, string, [][2]int){
-	for i := 0; i < SIZE; i++ {
-		ok := true
-		pos := [][2]int{}
-		for j := 0; j < SIZE; j++ {
-			val := matrix[i][j]
-			if val != "X" && !used[val]{
-				ok = false
-				break
-			}
-
-			pos = append(pos, [2]int{i, j})
-		}
-		if ok {
-			return true, fmt.Sprintf("Bingo ngang dong %d", i + 1), pos
-		}
+func NewBingoService() (*BingoService, error) {
+	fileHandler, err := file.NewFileHandler("bingo_output.txt")
+	if err != nil {
+		log.Error().Err(err).Msg("Lỗi tạo file handler")
+		return nil, fmt.Errorf("lỗi tạo file handler: %w", err)
 	}
 
-	for j := 0; j < SIZE; j++{
-		ok := true
-		pos := [][2]int{}
-		for i := 0; i < SIZE; i++{
-			val := matrix[i][j]
-			if val != "X" && !used[val]{
-				ok = false
-				break
-			}
+	board := bingo.CreateBingoBoard()
 
-			pos = append(pos, [2]int{i, j})
-		}
-		if ok {
-			return true, fmt.Sprintf("Bingo ngang cot %d", j + 1), pos
-		}
+	return &BingoService{
+		board:       board,
+		called:      make(map[string]bool),
+		calledList:  []string{},
+		fileHandler: fileHandler,
+	}, nil
+}
+
+func (bs *BingoService) Close() error {
+	return bs.fileHandler.Close()
+}
+
+func (bs *BingoService) RunGame() error {
+	err := bs.fileHandler.WriteBoard(bs.board)
+	if err != nil {
+		log.Error().Err(err).Msg("Lỗi ghi bảng")
+		return fmt.Errorf("lỗi ghi bảng: %w", err)
 	}
 
-	ok := true
-	pos := [][2]int{}
-	for i := 0; i < SIZE; i++ {
-		val := matrix[i][i]
-		if val != "X" && !used[val]{
-			ok = false
+	var bingoMsg string
+	var bingoPos [][2]int
+
+	for {
+		calledNumber, ok := bs.callNextNumber()
+		if !ok {
 			break
 		}
 
-		pos = append(pos, [2]int{i, i})
-	}
-	if ok{
-		return true, "Bingo duong cheo chinh", pos
-	}
+		if len(bs.calledList) == 1 {
+			err = bs.fileHandler.WriteNewline()
+			if err != nil {
+				log.Error().Err(err).Msg("Lỗi ghi xuống dòng")
+				return fmt.Errorf("lỗi ghi xuống dòng: %w", err)
+			}
+		}
 
-	ok = true
-	pos = [][2]int{}
-	for i := 0; i < SIZE; i++ {
-		val := matrix[i][SIZE - i -1]
-		if val != "X" && !used[val]{
-			ok = false
+		err = bs.fileHandler.WriteCalledNumber(calledNumber)
+		if err != nil {
+			log.Error().Err(err).Msg("Lỗi ghi số")
+			return fmt.Errorf("lỗi ghi số: %w", err)
+		}
+
+		hasBingo, msg, pos := bingo.CheckBingo(bs.board, bs.called)
+		if hasBingo {
+			bingoMsg = msg
+			bingoPos = pos
 			break
 		}
 
-		pos = append(pos, [2]int{i, SIZE - i - 1})
-	}
-	if ok{
-		return true, "Bingo duong cheo phu", pos
+		time.Sleep(2 * time.Second)
 	}
 
-	return false, "", nil
+	err = bs.fileHandler.WriteBingoResult(bingoMsg)
+	if err != nil {
+		log.Error().Err(err).Msg("Lỗi ghi kết quả")
+		return fmt.Errorf("lỗi ghi kết quả: %w", err)
+	}
+
+	err = bs.fileHandler.WriteFinalBoard(bs.board, bs.called, bingoPos)
+	if err != nil {
+		log.Error().Err(err).Msg("Lỗi ghi bảng cuối")
+		return fmt.Errorf("lỗi ghi bảng cuối: %w", err)
+	}
+
+	return nil
+}
+
+func (bs *BingoService) callNextNumber() (string, bool) {
+	for {
+		num := rand.Intn(50) + 1
+		str := fmt.Sprintf("%d", num)
+		if bs.called[str] {
+			continue
+		}
+		bs.called[str] = true
+		bs.calledList = append(bs.calledList, str)
+		return str, true
+	}
 }

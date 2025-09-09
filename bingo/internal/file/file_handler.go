@@ -1,36 +1,33 @@
-package internal
+package file
 
 import (
 	"fmt"
 	"os"
 )
 
-type FileHandler struct {
+type Handler struct {
 	file *os.File
 }
 
-// NewFileHandler tạo file handler mới
-func NewFileHandler(filename string) (*FileHandler, error) {
+func NewFileHandler(filename string) (*Handler, error) {
 	file, err := os.Create(filename)
 	if err != nil {
 		return nil, fmt.Errorf("lỗi tạo file: %w", err)
 	}
 
-	return &FileHandler{
+	return &Handler{
 		file: file,
 	}, nil
 }
 
-// Close đóng file
-func (fh *FileHandler) Close() error {
+func (fh *Handler) Close() error {
 	if fh.file != nil {
 		return fh.file.Close()
 	}
 	return nil
 }
 
-// WriteBoard ghi bảng bingo ban đầu vào file
-func (fh *FileHandler) WriteBoard(board [][]string) error {
+func (fh *Handler) WriteBoard(board [][]string) error {
 	for i := 0; i < len(board); i++ {
 		for j := 0; j < len(board[i]); j++ {
 			_, err := fmt.Fprintf(fh.file, "%2s ", board[i][j])
@@ -46,26 +43,22 @@ func (fh *FileHandler) WriteBoard(board [][]string) error {
 	return nil
 }
 
-// WriteNewline ghi xuống dòng mới
-func (fh *FileHandler) WriteNewline() error {
+func (fh *Handler) WriteNewline() error {
 	_, err := fmt.Fprintln(fh.file)
 	return err
 }
 
-// WriteCalledNumber ghi số được gọi
-func (fh *FileHandler) WriteCalledNumber(number string) error {
+func (fh *Handler) WriteCalledNumber(number string) error {
 	_, err := fmt.Fprintf(fh.file, "%s ", number)
 	return err
 }
 
-// WriteBingoResult ghi kết quả bingo
-func (fh *FileHandler) WriteBingoResult(message string) error {
+func (fh *Handler) WriteBingoResult(message string) error {
 	_, err := fmt.Fprintf(fh.file, "\n%s\n", message)
 	return err
 }
 
-// WriteFinalBoard ghi bảng cuối cùng với highlight các vị trí bingo
-func (fh *FileHandler) WriteFinalBoard(board [][]string, called map[string]bool, bingoPos [][2]int) error {
+func (fh *Handler) WriteFinalBoard(board [][]string, called map[string]bool, bingoPos [][2]int) error {
 	for i := 0; i < len(board); i++ {
 		for j := 0; j < len(board[i]); j++ {
 			val := board[i][j]

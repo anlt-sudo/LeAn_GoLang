@@ -11,16 +11,33 @@
 
 ## Cấu trúc dự án
 
-```Cau truc du an
+```
 bingo/
 ├── cmd/
 │   └── app/
-│       └── main.go
+│       └── main.go                 # Entry point của ứng dụng
 ├── internal/
+│   ├── bingo/
+│   │   └── bingo.go                # Logic tạo board và check bingo
+│   ├── file/
+│   │   └── file_handler.go         # Xử lý các thao tác với file
 │   └── service/
-│       └── service.go
-└── README.md
+│       └── service.go              # Service chính điều phối game
+├── demo/
+│   └── ketqua.png                  # Hình ảnh minh họa kết quả
+├── go.mod                          # Go module file
+├── bingo_output.txt                # File output kết quả game
+└── README.md                       # Tài liệu hướng dẫn
 ```
+
+## Mô tả các thành phần
+
+- **main.go**: Điểm khởi đầu chương trình, chỉ gọi service để chạy game
+- **bingo.go**: Chứa 2 hàm chính:
+  - `CreateBingoBoard()`: Tạo bảng bingo 5x5
+  - `CheckBingo()`: Kiểm tra điều kiện bingo
+- **file_handler.go**: Xử lý tất cả thao tác ghi file output
+- **service.go**: Service chính tổ chức và điều phối toàn bộ logic game
 
 ## Kết quả demo
 
