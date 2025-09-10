@@ -23,3 +23,12 @@
 ## Lay tat ca category
 
 ![Log với zerolog](./demo/get-all-cate.png)
+
+## Cap nhat category
+
+![Log với zerolog](./demo/update-cate.png)
+
+## Xoa category (kiem tra album truoc)
+
+![Log với zerolog](./demo/del-1.png)
+![Log với zerolog](./demo/del-2.png)

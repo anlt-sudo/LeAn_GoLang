@@ -6,6 +6,7 @@ import (
 	"go-mysql/internal/config"
 	"go-mysql/internal/model"
 	"go-mysql/internal/repository"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -27,6 +28,8 @@ func main() {
 		fmt.Println("4. Thêm Danh Mục")
 		fmt.Println("5. Lấy Tất cả Danh Mục")
 		fmt.Println("6. Lấy Tất cả Album")
+		fmt.Println("7. Cập nhật Category")
+		fmt.Println("8. Xóa Category (kiểm tra Album trước)")
 		fmt.Println("0. Thoát")
 		fmt.Print("Chọn thao tác: ")
 		input, _ := reader.ReadString('\n')
@@ -129,6 +132,28 @@ func main() {
 					fmt.Printf("  %s - %s (%s) | %.2f | Danh mục: %s\n",
 						a.ID, a.Title, a.Artist, a.Price, a.CategoryID)
 				}
+			}
+		case "7":
+			fmt.Print("Nhập ID Category cần cập nhật: ")
+			id, _ := reader.ReadString('\n')
+			id = strings.TrimSpace(id)
+			fmt.Print("Nhập tên mới: ")
+			newName, _ := reader.ReadString('\n')
+			newName = strings.TrimSpace(newName)
+			if err := categoryRepo.UpdateCategory(id, newName); err != nil {
+				log.Println("Lỗi cập nhật category:", err)
+			} else {
+				fmt.Println("Cập nhật category thành công")
+			}
+
+		case "8":
+			fmt.Print("Nhập ID Category cần xóa: ")
+			id, _ := reader.ReadString('\n')
+			id = strings.TrimSpace(id)
+			if err := categoryRepo.DeleteCategory(id); err != nil {
+				log.Println("Lỗi xóa category:", err)
+			} else {
+				fmt.Println("Xóa category thành công")
 			}
 
 		case "0":

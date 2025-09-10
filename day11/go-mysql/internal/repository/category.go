@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"go-mysql/internal/model"
 
 	"github.com/google/uuid"
@@ -39,4 +40,40 @@ func (r *CategoryRepository) GetAllCategories() ([]model.Category, error) {
 		categories = append(categories, c)
 	}
 	return categories, nil
+}
+
+func (r *CategoryRepository) UpdateCategory(id string, newName string) error {
+	_, err := r.DB.Exec(
+		"UPDATE category SET name = ? WHERE id = ?",
+		newName, id,
+	)
+	return err
+}
+
+func (r *CategoryRepository) CheckHasAlbums(categoryID string) (bool, error) {
+	var count int
+	err := r.DB.QueryRow(
+		"SELECT COUNT(*) FROM album WHERE category_id = ?",
+		categoryID,
+	).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func (r *CategoryRepository) DeleteCategory(id string) error {
+	hasAlbums, err := r.CheckHasAlbums(id)
+	if err != nil {
+		return err
+	}
+	if hasAlbums {
+		return fmt.Errorf("không thể xóa category %s vì vẫn còn album tham chiếu", id)
+	}
+
+	_, err = r.DB.Exec(
+		"DELETE FROM category WHERE id = ?",
+		id,
+	)
+	return err
 }
