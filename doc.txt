@@ -1,6 +1,2 @@
-Ứng dụng bingo
-- tạo page bingo -> xuất ra file output page vừa tạo (5 line đầu)
-- mỗi 2s random 1 số -> xuất ra file output ở line 6 (cách bằng space)
-- kiểm tra nếu page đã bingo thì dừng
-- xuất ra file output line đã bingo (ngang, dọc hoặc chéo) ở line 7
-- xuất ra file output page bingo với điều kiện số nào đã xuất hiện thì ở vị trí đó để 0 (line 8 - line 12)
+* Ngoài những điểm trên, hầu hết các thao tác khác như db.Query(), db.Exec(), db.Begin() (cho transaction) đều hoạt động
+ giống hệt nhau vì chúng là một phần của API database/sql chung.
