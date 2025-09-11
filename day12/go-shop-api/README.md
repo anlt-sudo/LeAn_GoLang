@@ -33,7 +33,7 @@ go-shop-api/
 └─ README.md
 ```
 
-## 🚀 Cách chạy
+## Cách chạy
 
 ### 1. Clone dự án
 
