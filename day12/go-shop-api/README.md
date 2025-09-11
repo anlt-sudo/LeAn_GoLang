@@ -79,7 +79,7 @@ curl -X POST [http://localhost:8080/api//categories](http://localhost:8080/api/v
  -d '{"name":"Laptop","description":"Máy tính xách tay"}'
 
 Tìm kiếm Category
-curl [http://localhost:8080/api/v1/categories](http://localhost:8080/api/v1/categories/search?q=laptop)
+curl [http://localhost:8080/api/v1/categories/search?q=laptop](http://localhost:8080/api/v1/categories/search?q=laptop)
 
 ```Kết quả
 Tạo thành công (201 Created)
