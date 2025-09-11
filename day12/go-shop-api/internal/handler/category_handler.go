@@ -5,8 +5,10 @@ import (
 	"strconv"
 
 	"go-shop-api/internal/dto"
+	"go-shop-api/internal/errors"
 	"go-shop-api/internal/model"
 	"go-shop-api/internal/service"
+	"go-shop-api/internal/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +24,7 @@ func NewCategoryHandler(s *service.CategoryService) *CategoryHandler {
 func (h *CategoryHandler) GetAll(c *gin.Context) {
 	categories, err := h.Service.GetAll()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, categories)
@@ -31,8 +33,12 @@ func (h *CategoryHandler) GetAll(c *gin.Context) {
 func (h *CategoryHandler) GetByID(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	category, err := h.Service.GetByID(uint(id))
+	if category == nil{
+		c.Error(errors.New(http.StatusNotFound, "Category is not found!"))
+		return
+	}
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Category not found"})
+		c.Error(errors.New(http.StatusInternalServerError, "Error while get category by ID"))
 		return
 	}
 	c.JSON(http.StatusOK, category)
@@ -41,8 +47,8 @@ func (h *CategoryHandler) GetByID(c *gin.Context) {
 func (h *CategoryHandler) Create(c *gin.Context) {
 	var req dto.CategoryRequest
 
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    if err := utils.BindAndValidate(c, &req); err != nil {
+        c.Error(err)
         return
     }
 
@@ -52,7 +58,7 @@ func (h *CategoryHandler) Create(c *gin.Context) {
     }
 
     if err := h.Service.Create(&category); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        c.Error(errors.New(http.StatusNotFound, "Create Failed!"))
         return
     }
 
@@ -71,14 +77,14 @@ func (h *CategoryHandler) Update(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("id"))
 
     var req dto.CategoryRequest
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    if err := utils.BindAndValidate(c, &req); err != nil {
+        c.Error(err)
         return
     }
 
     category, err := h.Service.GetByID(uint(id))
     if err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Category not found"})
+        c.Error(errors.New(http.StatusBadGateway, "Failed while search category!"))
         return
     }
 
@@ -86,7 +92,7 @@ func (h *CategoryHandler) Update(c *gin.Context) {
     category.Description = req.Description
 
     if err := h.Service.Update(category); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        c.Error(errors.New(http.StatusBadGateway, "Update failed!"))
         return
     }
 
@@ -105,7 +111,7 @@ func (h *CategoryHandler) Update(c *gin.Context) {
 func (h *CategoryHandler) Delete(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	if err := h.Service.Delete(uint(id)); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.Error(errors.New(http.StatusBadGateway, "Error while delete category!"))
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"deleted": true})
@@ -115,7 +121,7 @@ func (h *CategoryHandler) Search(c *gin.Context) {
     keyword := c.Query("q")
     categories, err := h.Service.SearchByName(keyword)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        c.Error(errors.New(http.StatusBadGateway, "Error while search category!"))
         return
     }
 

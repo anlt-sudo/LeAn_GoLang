@@ -2,6 +2,7 @@ package router
 
 import (
 	"go-shop-api/internal/handler"
+	"go-shop-api/internal/middleware"
 	"go-shop-api/internal/repository"
 	"go-shop-api/internal/service"
 
@@ -11,6 +12,10 @@ import (
 
 func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
+
+	// r.Use(middleware.Logging())
+	r.Use(middleware.ErrorHandler())
+	r.Use(middleware.CORS())
 
 	categoryRepo := repository.NewCategoryRepository(db)
 	categoryService := service.NewCategoryService(categoryRepo)
