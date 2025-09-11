@@ -1,26 +1,41 @@
 package main
 
 import (
-	"fmt"
-	"sync"
-	"time"
+	"self-training/internal/config"
+	"self-training/internal/handler"
+	"self-training/internal/model"
+	"self-training/internal/repository"
+	"self-training/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
-func showGreat(str string, wg *sync.WaitGroup) {
-	defer wg.Done()
-	for i := 0; i < 50; i++ {
-		fmt.Println(str)
-		time.Sleep(100 * time.Millisecond)
-	}
-}
-
 func main() {
-	var wg sync.WaitGroup
+	config.ConnectDB()
+	db := config.DB
 
-	wg.Add(2)
+	// migrate tables
+	db.AutoMigrate(&model.Category{}, &model.Product{})
 
-	go showGreat("GO", &wg)
-	go showGreat("LANG", &wg)
+	// init repos, services, handlers
+	categoryRepo := repository.NewCategoryRepository(db)
+	categoryService := service.NewCategoryService(categoryRepo)
+	categoryHandler := handler.NewCategoryHandler(categoryService)
 
-	showGreat("This Is Main", &wg)
+	r := gin.Default()
+
+	api := r.Group("/api/v1")
+	{
+		cat := api.Group("/categories")
+		{
+			cat.GET("", categoryHandler.GetAll)
+			cat.GET("/:id", categoryHandler.GetByID)
+			cat.POST("", categoryHandler.Create)
+			cat.PUT("/:id", categoryHandler.Update)
+			cat.DELETE("/:id", categoryHandler.Delete)
+		}
+		// TODO: thêm routes cho products
+	}
+
+	r.Run(":8080")
 }
