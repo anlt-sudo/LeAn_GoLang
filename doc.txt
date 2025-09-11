@@ -1,2 +1,0 @@
-* Ngoài những điểm trên, hầu hết các thao tác khác như db.Query(), db.Exec(), db.Begin() (cho transaction) đều hoạt động
- giống hệt nhau vì chúng là một phần của API database/sql chung.
