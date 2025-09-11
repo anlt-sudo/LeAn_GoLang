@@ -5,29 +5,29 @@ import (
 	"os"
 )
 
-type Handler struct {
+type FileService struct {
 	file *os.File
 }
 
-func NewFileHandler(filename string) (*Handler, error) {
+func NewFileService(filename string) (*FileService, error) {
 	file, err := os.Create(filename)
 	if err != nil {
 		return nil, fmt.Errorf("lỗi tạo file: %w", err)
 	}
 
-	return &Handler{
+	return &FileService{
 		file: file,
 	}, nil
 }
 
-func (fh *Handler) Close() error {
+func (fh *FileService) Close() error {
 	if fh.file != nil {
 		return fh.file.Close()
 	}
 	return nil
 }
 
-func (fh *Handler) WriteBoard(board [][]string) error {
+func (fh *FileService) WriteBoard(board [][]string) error {
 	for i := 0; i < len(board); i++ {
 		for j := 0; j < len(board[i]); j++ {
 			_, err := fmt.Fprintf(fh.file, "%2s ", board[i][j])
@@ -43,22 +43,22 @@ func (fh *Handler) WriteBoard(board [][]string) error {
 	return nil
 }
 
-func (fh *Handler) WriteNewline() error {
+func (fh *FileService) WriteNewline() error {
 	_, err := fmt.Fprintln(fh.file)
 	return err
 }
 
-func (fh *Handler) WriteCalledNumber(number string) error {
+func (fh *FileService) WriteCalledNumber(number string) error {
 	_, err := fmt.Fprintf(fh.file, "%s ", number)
 	return err
 }
 
-func (fh *Handler) WriteBingoResult(message string) error {
+func (fh *FileService) WriteBingoResult(message string) error {
 	_, err := fmt.Fprintf(fh.file, "\n%s\n", message)
 	return err
 }
 
-func (fh *Handler) WriteFinalBoard(board [][]string, called map[string]bool, bingoPos [][2]int) error {
+func (fh *FileService) WriteFinalBoard(board [][]string, called map[string]bool, bingoPos [][2]int) error {
 	for i := 0; i < len(board); i++ {
 		for j := 0; j < len(board[i]); j++ {
 			val := board[i][j]

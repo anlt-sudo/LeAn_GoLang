@@ -5,6 +5,9 @@ import (
 	"math/rand"
 )
 
+type BingoService struct {
+}
+
 const SIZE = 5
 
 func CreateBingoBoard() [][]string {
