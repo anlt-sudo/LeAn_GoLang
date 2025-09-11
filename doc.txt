@@ -1,2 +1,31 @@
-* Ngoài những điểm trên, hầu hết các thao tác khác như db.Query(), db.Exec(), db.Begin() (cho transaction) đều hoạt động
- giống hệt nhau vì chúng là một phần của API database/sql chung.
+4. Cách sử dụng Middleware
+- Gin cung cấp hai cách chính để áp dụng middleware:
+a. Áp dụng Toàn cục (Global Middleware)
+Sử dụng router.Use(). Middleware sẽ được áp dụng cho tất cả các route được định nghĩa sau nó. Đây là cách phổ biến nhất
+ cho các middleware như logging, CORS, recovery.
+
+router := gin.Default()
+router.Use(LoggerMiddleware())
+router.Use(AuthenticationMiddleware()) // Có thể thêm nhiều middleware
+
+router.GET("/route1", handler1)
+router.GET("/route2", handler2)
+
+b. Áp dụng cho một Route hoặc một Nhóm Route cụ thể
+- Bạn có thể truyền các hàm middleware như các tham số bổ sung khi định nghĩa route.
+- Cho một route duy nhất:
+
+// Middleware AuthRequired() chỉ áp dụng cho route này.
+router.GET("/admin/dashboard", AuthRequired(), func(c *gin.Context) {
+    // ...
+})
+
+- Cho một nhóm route:
+
+adminRoutes := router.Group("/admin")
+// Áp dụng middleware AuthRequired() cho tất cả các route trong nhóm /admin
+adminRoutes.Use(AuthRequired())
+{
+    adminRoutes.GET("/dashboard", dashboardHandler)
+    adminRoutes.POST("/users", createUserHandler)
+}

@@ -1,9 +1,12 @@
-package bingo
+package service
 
 import (
 	"fmt"
 	"math/rand"
 )
+
+type BingoService struct {
+}
 
 const SIZE = 5
 
