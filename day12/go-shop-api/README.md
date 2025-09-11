@@ -38,7 +38,7 @@ go-shop-api/
 ### 1. Clone dự án
 
 ```bash
-git clone https://github.com/your-repo/go-shop-api.git
+git clone https://github.com/anlt-sudo/go-shop-api.git
 cd go-shop-api
 
 ```
