@@ -22,7 +22,9 @@ bingo/
 │   ├── file/
 │   │   └── file_handler.go         # Xử lý các thao tác với file
 │   └── service/
-│       └── service.go              # Service chính điều phối game
+│       └── file_service.go              # File service xử lý ghi file
+|       |
+|       L bingo_service.go          # Logic tạo board và check bingo
 ├── demo/
 │   └── ketqua.png                  # Hình ảnh minh họa kết quả
 ├── go.mod                          # Go module file

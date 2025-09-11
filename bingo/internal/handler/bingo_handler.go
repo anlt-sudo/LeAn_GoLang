@@ -5,8 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/anlt-sudo/bingo/internal/service/bingo"
-	"github.com/anlt-sudo/bingo/internal/service/file"
+	"github.com/anlt-sudo/bingo/internal/service"
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,18 +13,17 @@ type BingoHandler struct {
 	board       [][]string
 	called      map[string]bool
 	calledList  []string
-	fileService *file.FileService
-	bingoService *bingo.BingoService
+	fileService *service.FileService
 }
 
 func NewBingoHandler() (*BingoHandler, error) {
-	fileService, err := file.NewFileService("bingo.txt")
+	fileService, err := service.NewFileService("bingo.txt")
 	if err != nil {
 		log.Error().Err(err).Msg("Lỗi tạo file handler")
 		return nil, fmt.Errorf("lỗi tạo file handler: %w", err)
 	}
 
-	board := bingo.CreateBingoBoard()
+	board := service.CreateBingoBoard()
 
 	return &BingoHandler{
 		board:       board,
@@ -69,7 +67,7 @@ func (bs *BingoHandler) RunGame() error {
 			return fmt.Errorf("lỗi ghi số: %w", err)
 		}
 
-		hasBingo, msg, pos := bingo.CheckBingo(bs.board, bs.called)
+		hasBingo, msg, pos := service.CheckBingo(bs.board, bs.called)
 		if hasBingo {
 			bingoMsg = msg
 			bingoPos = pos

@@ -1,4 +1,4 @@
-package bingo
+package service
 
 import (
 	"fmt"
