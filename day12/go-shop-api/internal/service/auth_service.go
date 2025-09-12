@@ -13,12 +13,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+
+
 type AuthService struct {
 	UserRepo        *repository.UserRepository
 	RefreshRepo     *repository.RefreshTokenRepository
 	AccessTokenTTL  time.Duration
 	RefreshTokenTTL time.Duration
 }
+
+var (
+	ErrInvalidCredentials = errors.New("invalid credentials")
+)
 
 func NewAuthService(userRepo *repository.UserRepository, refreshRepo *repository.RefreshTokenRepository) *AuthService {
 	return &AuthService{
@@ -50,7 +56,7 @@ func (s *AuthService) Authenticate(email, password string) (string, string, *mod
 		return "", "", nil, err
 	}
 	if err := s.ComparePassword(u.Password, password); err != nil {
-		return "", "", nil, errors.New("invalid credentials")
+		return "", "", nil, ErrInvalidCredentials
 	}
 	accessToken, err := jwt.CreateAccessToken(u.ID, u.Email, u.Role, s.AccessTokenTTL)
 	if err != nil {

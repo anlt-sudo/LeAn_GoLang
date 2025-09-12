@@ -1,5 +1,0 @@
-Ứng dụng sử dụng JWT (JSON Web Token) để xác thực và phân quyền người dùng.
-Khi người dùng đăng nhập thành công, hệ thống sinh ra:
-- Access Token: có thời hạn ngắn (ví dụ: 1h), dùng để gọi API.
-- Refresh Token: có thời hạn dài hơn (ví dụ: 7 ngày), dùng để lấy access token mới khi token cũ hết hạn.
-- Refresh token được hash và lưu trong cơ sở dữ liệu để có thể quản lý và revoke khi cần thiết.
