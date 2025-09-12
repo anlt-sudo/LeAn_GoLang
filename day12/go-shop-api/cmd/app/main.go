@@ -10,11 +10,9 @@ func main() {
 	config.ConnectDB()
 	db := config.DB
 
-	db.AutoMigrate(&model.Category{}, &model.Product{}, &model.User{})
+	db.AutoMigrate(&model.Category{}, &model.Product{}, &model.User{}, &model.RefreshToken{})
 
 	r := router.SetupRouter(db)
-
-	
 
 	r.Run(":8080")
 }

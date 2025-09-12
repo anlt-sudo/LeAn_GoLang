@@ -22,6 +22,14 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 	return &u, nil
 }
 
+func (r *UserRepository) FindByID(id uint) (*model.User, error) {
+	var u model.User
+	if err := r.DB.First(&u, id).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
 func (r *UserRepository) Create(u *model.User) error {
 	return r.DB.Create(u).Error
 }

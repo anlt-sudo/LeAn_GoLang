@@ -2,22 +2,18 @@ package jwt
 
 import (
 	"errors"
-	"os"
 	"time"
+
+	"go-shop-api/config"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 var (
-	secret = []byte(getEnv("JWT_SECRET", "replace-with-your-secret"))
+	secret = []byte(config.GetEnv("JWT_SECRET", ""))
+	refreshSecret = []byte(config.GetEnv("JWT_SECRET_FRESH", ""))
 )
 
-func getEnv(key, fallback string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return fallback
-}
 
 
 type Claims struct {
@@ -41,6 +37,15 @@ func CreateAccessToken(userID uint, email, role string, ttl time.Duration) (stri
 	return token.SignedString(secret)
 }
 
+func GenerateRefreshToken(userID uint, ttl time.Duration) (string, error) {
+	claims := jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(ttl)),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		Subject:   string(rune(userID)),
+	}
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(refreshSecret)
+}
+
 func ParseAndVerify(tokenStr string) (*Claims, error) {
 	parser := jwt.NewParser(jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Name}))
 	token, err := parser.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
@@ -53,4 +58,12 @@ func ParseAndVerify(tokenStr string) (*Claims, error) {
 		return claims, nil
 	}
 	return nil, errors.New("invalid token")
+}
+
+func ParseRefreshToken(tokenStr string) (*jwt.RegisteredClaims, error) {
+	claims := &jwt.RegisteredClaims{}
+	_, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return refreshSecret, nil
+	})
+	return claims, err
 }

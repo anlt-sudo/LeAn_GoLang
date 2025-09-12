@@ -34,6 +34,31 @@ func AuthRequired() gin.HandlerFunc {
 	}
 }
 
+func RoleRequired(roles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		claims, ok := GetClaims(c)
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+			return
+		}
+
+		allowed := false
+		for _, r := range roles {
+			if claims.Role == r {
+				allowed = true
+				break
+			}
+		}
+
+		if !allowed {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func GetClaims(c *gin.Context) (*jwt.Claims, bool) {
 	v, ok := c.Get(ContextUserKey)
 	if !ok {
