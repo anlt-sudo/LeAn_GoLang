@@ -6,11 +6,13 @@ import (
 )
 
 type BingoService struct {
+	Board [][]string
+	Used  map[string]bool
 }
 
 const SIZE = 5
 
-func CreateBingoBoard() [][]string {
+func NewBingoBoard() *BingoService{
 	matrix := make([][]string, SIZE)
 	used := make(map[int]bool)
 	for i := 0; i < SIZE; i++ {
@@ -23,17 +25,22 @@ func CreateBingoBoard() [][]string {
 			for {
 				num := rand.Intn(50) + 1
 				if !used[num] {
-					matrix[i][j] = fmt.Sprintf("%2d", num)
+					matrix[i][j] = fmt.Sprintf("%d", num)
 					used[num] = true
 					break
 				}
 			}
 		}
 	}
-	return matrix
+	return &BingoService{
+		Board: matrix,
+		Used:  make(map[string]bool),
+	}
 }
 
-func CheckBingo(matrix [][]string, used map[string]bool) (bool, string, [][2]int) {
+func (bin *BingoService) CheckBingo() (bool, string, [][2]int) {
+	matrix := bin.Board
+	used := bin.Used
 	for i := 0; i < SIZE; i++ {
 		ok := true
 		pos := [][2]int{}

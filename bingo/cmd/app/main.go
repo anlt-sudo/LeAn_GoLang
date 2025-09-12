@@ -1,15 +1,11 @@
 package main
 
 import (
-	"math/rand"
-	"time"
-
 	"github.com/anlt-sudo/bingo/internal/handler"
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
 
 	bingoService, err := handler.NewBingoHandler()
 	if err != nil {

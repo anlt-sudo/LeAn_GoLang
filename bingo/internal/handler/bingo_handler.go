@@ -10,26 +10,27 @@ import (
 )
 
 type BingoHandler struct {
-	board       [][]string
 	called      map[string]bool
 	calledList  []string
 	fileService *service.FileService
+	bingoService *service.BingoService
 }
 
 func NewBingoHandler() (*BingoHandler, error) {
 	fileService, err := service.NewFileService("bingo.txt")
+	bingoService := service.NewBingoBoard()
+
 	if err != nil {
 		log.Error().Err(err).Msg("Lỗi tạo file handler")
 		return nil, fmt.Errorf("lỗi tạo file handler: %w", err)
 	}
 
-	board := service.CreateBingoBoard()
 
 	return &BingoHandler{
-		board:       board,
 		called:      make(map[string]bool),
 		calledList:  []string{},
 		fileService: fileService,
+		bingoService: bingoService,
 	}, nil
 }
 
@@ -38,7 +39,7 @@ func (bs *BingoHandler) Close() error {
 }
 
 func (bs *BingoHandler) RunGame() error {
-	err := bs.fileService.WriteBoard(bs.board)
+	err := bs.fileService.WriteBoard(bs.bingoService.Board)
 	if err != nil {
 		log.Error().Err(err).Msg("Lỗi ghi bảng")
 		return fmt.Errorf("lỗi ghi bảng: %w", err)
@@ -52,6 +53,8 @@ func (bs *BingoHandler) RunGame() error {
 		if !ok {
 			break
 		}
+
+		bs.bingoService.Used[calledNumber] = true
 
 		if len(bs.calledList) == 1 {
 			err = bs.fileService.WriteNewline()
@@ -67,7 +70,7 @@ func (bs *BingoHandler) RunGame() error {
 			return fmt.Errorf("lỗi ghi số: %w", err)
 		}
 
-		hasBingo, msg, pos := service.CheckBingo(bs.board, bs.called)
+		hasBingo, msg, pos := bs.bingoService.CheckBingo()
 		if hasBingo {
 			bingoMsg = msg
 			bingoPos = pos
@@ -83,7 +86,7 @@ func (bs *BingoHandler) RunGame() error {
 		return fmt.Errorf("lỗi ghi kết quả: %w", err)
 	}
 
-	err = bs.fileService.WriteFinalBoard(bs.board, bs.called, bingoPos)
+	err = bs.fileService.WriteFinalBoard(bs.bingoService.Board, bs.called, bingoPos)
 	if err != nil {
 		log.Error().Err(err).Msg("Lỗi ghi bảng cuối")
 		return fmt.Errorf("lỗi ghi bảng cuối: %w", err)
