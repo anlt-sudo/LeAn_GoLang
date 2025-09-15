@@ -8,7 +8,6 @@ import (
 
 	"go-shop-api/internal/auth/jwt"
 	"go-shop-api/internal/model"
-	"go-shop-api/internal/repository"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,8 +15,8 @@ import (
 
 
 type AuthService struct {
-	UserRepo        repository.UserRepositoryInterface
-	RefreshRepo     repository.RefreshTokenRepositoryInterface
+	UserRepo        model.UserRepositoryInterface
+	RefreshRepo     model.RefreshTokenRepositoryInterface
 	AccessTokenTTL  time.Duration
 	RefreshTokenTTL time.Duration
 }
@@ -26,7 +25,7 @@ var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 )
 
-func NewAuthService(userRepo repository.UserRepositoryInterface, refreshRepo repository.RefreshTokenRepositoryInterface) *AuthService {
+func NewAuthService(userRepo model.UserRepositoryInterface, refreshRepo model.RefreshTokenRepositoryInterface) *AuthService {
 	return &AuthService{
 		UserRepo:        userRepo,
 		RefreshRepo:     refreshRepo,

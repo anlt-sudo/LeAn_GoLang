@@ -1,0 +1,22 @@
+Ví dụ:
+// 1. Chạy lệnh để tạo mock:
+// mockery --name=UserStorer
+
+// 2. Sử dụng trong test (thường với testify/assert):
+func TestUserServiceWithMockery(t *testing.T) {
+    mockStorer := new(MockUserStorer) // Tạo mock từ file đã generate
+    service := UserService{Storer: mockStorer}
+
+    // Định nghĩa kỳ vọng
+    mockStorer.On("GetUser", 1).Return(User{ID: 1, Name: "Alice"}, nil)
+
+    // Chạy code test
+    name, err := service.GetUserName(1)
+
+    // Khẳng định kết quả
+    assert.NoError(t, err)
+    assert.Equal(t, "Alice", name)
+
+    // Kiểm tra xem các kỳ vọng có được đáp ứng không
+    mockStorer.AssertExpectations(t)
+}

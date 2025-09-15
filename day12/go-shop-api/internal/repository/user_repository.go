@@ -5,14 +5,6 @@ import (
 
 	"gorm.io/gorm"
 )
-
-
-type UserRepositoryInterface interface {
-	FindByEmail(email string) (*model.User, error)
-	FindByID(id uint) (*model.User, error)
-	Create(u *model.User) error
-}
-
 type UserRepository struct {
 	DB *gorm.DB
 }

@@ -13,15 +13,15 @@ import (
 )
 
 type ProductHandler struct {
-	Service *service.ProductService
+	Service service.IProductService
 }
 
-func NewProductHandler(s *service.ProductService) *ProductHandler {
+func NewProductHandler(s service.IProductService) *ProductHandler {
 	return &ProductHandler{Service: s}
 }
 
 func (h *ProductHandler) GetAll(c *gin.Context) {
-	products, err := h.Service.GetAll()
+	products, err := h.Service.FindAll()
 	if err != nil {
 		c.Error(err)
 		return
@@ -31,7 +31,7 @@ func (h *ProductHandler) GetAll(c *gin.Context) {
 
 func (h *ProductHandler) GetByID(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	product, err := h.Service.GetByID(uint(id))
+	product, err := h.Service.FindByID(uint(id))
 	if err != nil {
 		c.Error(err)
 		return
@@ -78,7 +78,7 @@ func (h *ProductHandler) Update(c *gin.Context) {
 		return
 	}
 
-	product, err := h.Service.GetByID(uint(id))
+	product, err := h.Service.FindByID(uint(id))
 	if err != nil {
 		c.Error(err)
 		return

@@ -3,14 +3,13 @@ package service
 import (
 	"errors"
 	"go-shop-api/internal/model"
-	"go-shop-api/internal/repository"
 )
 
 type CategoryService struct {
-	Repo *repository.CategoryRepository
+	Repo model.CategoryRepositoryInterface
 }
 
-func NewCategoryService(repo *repository.CategoryRepository) *CategoryService {
+func NewCategoryService(repo model.CategoryRepositoryInterface) *CategoryService {
 	return &CategoryService{Repo: repo}
 }
 

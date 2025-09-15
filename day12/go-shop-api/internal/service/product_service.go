@@ -2,14 +2,13 @@ package service
 
 import (
 	"go-shop-api/internal/model"
-	"go-shop-api/internal/repository"
 )
 
 type ProductService struct {
-	Repo *repository.ProductRepository
+	Repo model.IProductRepository
 }
 
-func NewProductService(repo *repository.ProductRepository) *ProductService {
+func NewProductService(repo model.IProductRepository) *ProductService {
 	return &ProductService{Repo: repo}
 }
 
