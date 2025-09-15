@@ -54,6 +54,9 @@ func (m *mockProductService) Delete(id uint) error {
 	return args.Error(0)
 }
 
+
+
+
 func setupRouter(ph *handler.ProductHandler) *gin.Engine {
 	r := gin.Default()
 	r.GET("/products", ph.GetAll)
@@ -80,6 +83,64 @@ func TestProductHandler_GetAll(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+// --- BENCHMARKS ---
+func BenchmarkProductHandler_GetAll(b *testing.B) {
+	gin.SetMode(gin.TestMode)
+	mockSvc := new(mockProductService)
+	ph := handler.NewProductHandler(mockSvc)
+	r := setupRouter(ph)
+
+	products := []model.Product{{ID: 1, Name: "A"}, {ID: 2, Name: "B"}}
+	mockSvc.On("FindAll").Return(products, nil)
+
+	for i := 0; i < b.N; i++ {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/products", nil)
+		r.ServeHTTP(w, req)
+	}
+}
+
+func BenchmarkProductHandler_Create(b *testing.B) {
+	gin.SetMode(gin.TestMode)
+	mockSvc := new(mockProductService)
+	ph := handler.NewProductHandler(mockSvc)
+	r := setupRouter(ph)
+
+	mockSvc.On("Create", mock.AnythingOfType("*model.Product")).Return(nil)
+
+	body := dto.ProductRequest{
+		Name:        "A",
+		Description: "desc",
+		Price:       10,
+		CategoryID:  1,
+	}
+	jsonBody, _ := json.Marshal(body)
+
+	for i := 0; i < b.N; i++ {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("POST", "/products", bytes.NewBuffer(jsonBody))
+		req.Header.Set("Content-Type", "application/json")
+		r.ServeHTTP(w, req)
+	}
+}
+
+func BenchmarkProductHandler_GetByID(b *testing.B) {
+	gin.SetMode(gin.TestMode)
+	mockSvc := new(mockProductService)
+	ph := handler.NewProductHandler(mockSvc)
+	r := setupRouter(ph)
+
+	product := &model.Product{ID: 1, Name: "A"}
+	mockSvc.On("FindByID", uint(1)).Return(product, nil)
+
+	for i := 0; i < b.N; i++ {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/products/1", nil)
+		r.ServeHTTP(w, req)
+	}
+}
+
 
 func TestProductHandler_GetByID(t *testing.T) {
 	gin.SetMode(gin.TestMode)
@@ -190,3 +251,5 @@ func TestProductHandler_GetByID_NotFound(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+

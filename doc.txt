@@ -1,22 +1,18 @@
-Ví dụ:
-// 1. Chạy lệnh để tạo mock:
-// mockery --name=UserStorer
+3. Các Kỹ thuật Benchmark Nâng cao
+b.ResetTimer()
+- Đôi khi, bạn cần thực hiện một số thao tác chuẩn bị (setup) tốn kém trước khi bắt đầu vòng lặp benchmark.
+ Bạn không muốn thời gian setup này được tính vào kết quả. b.ResetTimer() sẽ reset lại đồng hồ đo thời gian
+  và bộ nhớ ngay tại điểm nó được gọi.
 
-// 2. Sử dụng trong test (thường với testify/assert):
-func TestUserServiceWithMockery(t *testing.T) {
-    mockStorer := new(MockUserStorer) // Tạo mock từ file đã generate
-    service := UserService{Storer: mockStorer}
+func BenchmarkSomethingWithSetup(b *testing.B) {
+    // --- Phần setup ---
+    // Giả sử đây là một thao tác tốn kém
+    data := generateLargeSlice() 
+    
+    b.ResetTimer() // Đặt lại đồng hồ, không tính thời gian setup
 
-    // Định nghĩa kỳ vọng
-    mockStorer.On("GetUser", 1).Return(User{ID: 1, Name: "Alice"}, nil)
-
-    // Chạy code test
-    name, err := service.GetUserName(1)
-
-    // Khẳng định kết quả
-    assert.NoError(t, err)
-    assert.Equal(t, "Alice", name)
-
-    // Kiểm tra xem các kỳ vọng có được đáp ứng không
-    mockStorer.AssertExpectations(t)
+    // --- Phần benchmark ---
+    for i := 0; i < b.N; i++ {
+        processData(data)
+    }
 }

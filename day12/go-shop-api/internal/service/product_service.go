@@ -4,8 +4,18 @@ import (
 	"go-shop-api/internal/model"
 )
 
+
 type ProductService struct {
 	Repo model.IProductRepository
+}
+
+// Implement IProductService compatibility
+func (s *ProductService) FindAll() ([]model.Product, error) {
+	return s.GetAll()
+}
+
+func (s *ProductService) FindByID(id uint) (*model.Product, error) {
+	return s.GetByID(id)
 }
 
 func NewProductService(repo model.IProductRepository) *ProductService {
