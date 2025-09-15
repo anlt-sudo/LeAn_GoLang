@@ -6,6 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
+type RefreshTokenRepositoryInterface interface {
+	Save(token *model.RefreshToken) error
+	FindValid(tokenHash string) (*model.RefreshToken, error)
+	RevokeByUserID(userID uint) error
+}
+
 type RefreshTokenRepository struct {
 	DB *gorm.DB
 }

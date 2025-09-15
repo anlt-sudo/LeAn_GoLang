@@ -16,8 +16,8 @@ import (
 
 
 type AuthService struct {
-	UserRepo        *repository.UserRepository
-	RefreshRepo     *repository.RefreshTokenRepository
+	UserRepo        repository.UserRepositoryInterface
+	RefreshRepo     repository.RefreshTokenRepositoryInterface
 	AccessTokenTTL  time.Duration
 	RefreshTokenTTL time.Duration
 }
@@ -26,7 +26,7 @@ var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 )
 
-func NewAuthService(userRepo *repository.UserRepository, refreshRepo *repository.RefreshTokenRepository) *AuthService {
+func NewAuthService(userRepo repository.UserRepositoryInterface, refreshRepo repository.RefreshTokenRepositoryInterface) *AuthService {
 	return &AuthService{
 		UserRepo:        userRepo,
 		RefreshRepo:     refreshRepo,
