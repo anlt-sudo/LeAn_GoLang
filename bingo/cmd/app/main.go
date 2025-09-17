@@ -7,14 +7,14 @@ import (
 
 func main() {
 
-	bingoService, err := handler.NewBingoHandler()
+	bingoHandler, err := handler.NewBingoHandler()
 	if err != nil {
 		log.Error().Err(err).Msg("Error while init service")
 		return
 	}
-	defer bingoService.Close()
+	defer bingoHandler.Close()
 
-	err = bingoService.RunGame()
+	err = bingoHandler.RunGame()
 	if err != nil {
 		log.Error().Err(err).Msg("Loi khi chay Bingo")
 		return
